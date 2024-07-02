@@ -9,8 +9,10 @@
 
 package myfirstmodule.actions;
 
+import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
+import myfirstmodule.impl.MyRequestHandler;
 
 public class Java_action extends CustomJavaAction<java.lang.Boolean>
 {
@@ -23,7 +25,8 @@ public class Java_action extends CustomJavaAction<java.lang.Boolean>
 	public java.lang.Boolean executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		throw new com.mendix.systemwideinterfaces.MendixRuntimeException("Java action was not implemented");
+		Core.addRequestHandler("file2", new MyRequestHandler());
+		return true;
 		// END USER CODE
 	}
 
