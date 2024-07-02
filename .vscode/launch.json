@@ -1,0 +1,55 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Attach to Remote Program",
+            "request": "attach",
+            "hostName": "127.0.0.1",
+            "port": "5005"
+        },
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "test",
+            "request": "launch",
+            "mainClass": "myfirstmodule.impl.test",
+            "projectName": "App10_12"
+        },
+        {
+            "type": "java",
+            "name": "Launch Mendix Program",
+            "projectName": "App10_12",
+            "javaExec": "d:/Program Files/Eclipse Adoptium/jdk-21.0.3.9-hotspot/bin/java.exe",
+            "request": "launch",
+            "vmArgs": "-Djava.net.preferIPv4Stack=true -DMX_LOG_LEVEL=INFO \"-Djava.library.path=d:/Program Files/Mendix/10.12.0.38909/runtime/lib/x64;${workspaceFolder}/deployment/model/lib/userlib\" -Dfile.encoding=UTF-8 -Djava.io.tmpdir=\"${workspaceFolder}/deployment/data/tmp\"",
+            "classPaths": [
+                "d:/Program Files/Mendix/10.12.0.38909/runtime/launcher/runtimelauncher.jar"
+            ],
+            "cwd": "${workspaceFolder}/deployment",
+            "mainClass": "com.mendix.container.boot.Main",
+            "env": {
+                "M2EE_ADMIN_PASS": "1",
+                "MX_LOG_LEVEL": "v",
+                "M2EE_ADMIN_PORT": 8090,
+                "M2EE_CONSOLE_PATH": "d:/Program Files/Mendix/10.12.0.38909/modeler/MendixConsoleLog.exe",
+                "MX_INSTALL_PATH": "d:/Program Files/Mendix/10.12.0.38909",
+                "MXCONSOLE_BASE_PATH": "${workspaceFolder}/deployment",
+                "MXCONSOLE_RUNTIME_LISTEN_ADDRESSES": "*",
+                "MXCONSOLE_RUNTIME_PATH": "d:/Program Files/Mendix/10.12.0.38909/runtime",
+                "MXCONSOLE_RUNTIME_PORT": 8080,
+                "MXCONSOLE_SERVER_URL": "http://127.0.0.1:8090/"
+            },
+            "args": "${workspaceFolder}/deployment",
+            "postDebugTask": "killMendixConsoleLog"
+        }
+    ]
+}

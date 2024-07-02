@@ -1,0 +1,101 @@
+import java.util.stream.Collectors
+
+// TODO: mockito https://github.com/engalar/javaunittestreference/blob/master/build.gradle
+// TODO: jrebel
+// TODO: scss compiler startup
+
+plugins {
+    id 'application'
+    id 'java'
+    // id 'org.zeroturnaround.gradle.jrebel' version '1.2.0'// apply false
+}
+
+apply from: "deployment/variables.gradle"
+
+subprojects {
+    // apply plugin: 'org.zeroturnaround.gradle.jrebel'
+    afterEvaluate { project ->
+        if (project.name == 'deployment') {
+            tasks.withType(JavaCompile) { JavaCompile javaCompile ->
+                javaCompile.options.debug = true
+                javaCompile.options.debugOptions.debugLevel = 'lines,source,vars'
+            }
+        }
+    }
+}
+
+run.dependsOn(":deployment:package")
+
+// 设置工作目录
+def workingDir = mendixProjectDir + '/deployment'
+
+// 设置JVM参数
+def jvmArgs = [
+        '-DMX_LOG_LEVEL=INFO',
+        "-Djava.library.path=$mendixInstallDir/runtime/lib/x64;$mendixProjectDir/deployment/model/lib/userlib",
+        '-Dfile.encoding=UTF-8',
+        "-Djava.io.tmpdir=$workingDir/data/tmp"
+]
+
+// 设置程序参数
+def programArgs = [
+        mendixProjectDir + '/deployment'
+]
+
+// 设置类路径
+dependencies {
+    // 添加运行时所需的JAR包
+    runtimeOnly files("$mendixInstallDir/runtime/launcher/runtimelauncher.jar")
+    compileOnly files(publicApiJars
+            .stream()
+            .map { "$mendixInstallDir/$it" }
+            .collect(Collectors.toList()))
+}
+
+// 设置环境变量
+def environmentVars = [
+        'M2EE_ADMIN_PASS': '1',
+        'M2EE_ADMIN_PORT': '8090',
+        'M2EE_CONSOLE_PATH': "$mendixInstallDir/modeler/MendixConsoleLog.exe",
+        'MX_INSTALL_PATH': "$mendixInstallDir",
+        'MXCONSOLE_BASE_PATH': mendixProjectDir + '/deployment',
+        'MXCONSOLE_RUNTIME_PATH': "$mendixInstallDir/runtime",
+        'MXCONSOLE_RUNTIME_PORT': '8080',
+        'MXCONSOLE_RUNTIME_LISTEN_ADDRESSES': '*',
+        'MXCONSOLE_SERVER_URL': 'http://127.0.0.1:8090/'
+]
+
+application {
+    applicationDefaultJvmArgs = jvmArgs
+    mainClass = 'com.mendix.container.boot.Main'
+}
+run {
+    // 设置工作目录
+    workingDir = file(workingDir)
+
+    // 设置JVM参数
+    jvmArgs=jvmArgs
+
+    // 设置程序参数
+    args(programArgs)
+
+    // 设置环境变量
+    environment(environmentVars)
+    executable("D:/Program Files/Eclipse Adoptium/jdk-11.0.20.8-hotspot/bin/java.exe")
+}
+
+
+allprojects{
+	repositories {
+		maven {
+			url 'https://mirrors.huaweicloud.com/repository/maven/'
+		}
+	}
+	buildscript {
+		repositories {
+			maven {
+				url 'https://mirrors.huaweicloud.com/repository/maven/'
+			}
+		}
+	}
+}

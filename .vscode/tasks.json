@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build_mx",
+      "type": "shell",
+      "command": "d:/Program Files/Mendix/9.24.12.20495/modeler/mxbuild.exe",
+      "args": [
+        "--java-home=d:/\"Program Files\"/Eclipse Adoptium/jdk-11.0.20.8-hotspot",
+        "--java-exe-path=d:/\"Program Files\"/Eclipse Adoptium/jdk-11.0.20.8-hotspot/bin/java.exe",
+        "--target=deploy",
+        "--loose-version-check",
+        "${workspaceFolder}/MendixJavaPlayground.mpr"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "killMendixConsoleLog",
+      "type": "shell",
+      "command": "taskkill",
+      "args": [
+        "/F",
+        "/IM",
+        "MendixConsoleLog.exe"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
+
+
