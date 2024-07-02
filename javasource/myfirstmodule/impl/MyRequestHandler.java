@@ -8,6 +8,7 @@ import com.mendix.core.Core;
 import com.mendix.externalinterface.connector.RequestHandler;
 import com.mendix.m2ee.api.IMxRuntimeRequest;
 import com.mendix.m2ee.api.IMxRuntimeResponse;
+import com.mendix.systemwideinterfaces.core.IContext;
 
 import system.proxies.FileDocument;
 
@@ -17,8 +18,33 @@ public class MyRequestHandler extends RequestHandler {
     protected void processRequest(IMxRuntimeRequest request, IMxRuntimeResponse response, String path)
             throws Exception {
         var context = Core.createSystemContext();
-        var guid = request.getParameter("guid");
-        var fileDocument = FileDocument.load(context, Core.createMendixIdentifier(guid));
+        var fileid = 0;
+        if (request.getParameter("fileid") != null && !request.getParameter("fileid").isEmpty()) {
+            fileid = Integer.parseInt(request.getParameter("fileid"));
+        }
+        if (fileid > 0) {
+            var fileDocuments = Core
+                    .createXPathQuery(
+                            "//" + FileDocument.entityName + "[" + FileDocument.MemberNames.FileID + "=" + fileid + "]")
+                    .execute(context);
+            // must get one fileDocument
+            if (fileDocuments.size() == 1) {
+                var fileDocument = fileDocuments.get(0);
+                processFileDocument(request, response, FileDocument.initialize(context, fileDocument), context);
+            } else {
+                response.setStatus(404);
+            }
+        } else {
+
+            var guid = request.getParameter("guid");
+            var fileDocument = FileDocument.load(context, Core.createMendixIdentifier(guid));
+            processFileDocument(request, response, fileDocument, context);
+        }
+    }
+
+    private void processFileDocument(IMxRuntimeRequest request, IMxRuntimeResponse response,
+            FileDocument fileDocument, IContext context) throws IOException {
+
         var fileLength = fileDocument.getSize();
         var inputStream = Core.getFileDocumentContent(context, fileDocument.getMendixObject());
 
@@ -48,9 +74,7 @@ public class MyRequestHandler extends RequestHandler {
             response.addHeader("Content-Range",
                     "bytes " + start + "-" + (start + size - 1) + "/" + fileLength);
 
-            /* Integer actaulSize = */transferRange(response.getOutputStream(), inputStream, start, size);
-            // System.out.println("range send " + actaulSize + " bytes");
-
+            this.transferRange(response.getOutputStream(), inputStream, start, size);
         } else {
             response.setStatus(200);
             byte[] buffer = new byte[1024];
