@@ -31,8 +31,20 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "label": "gradlePackage",
+      "type": "shell",
+      "command": "gradle",
+      "args": [
+        "-PgenerateFullDebugInfo=true",
+        "deployment:package"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
     }
   ]
 }
-
-
